@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>💧🥬生菜重量計算_水耕_川聖_箱裝</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, shrink-to-fit=no">
+
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", Arial, sans-serif;
+            padding: 10px;
+            background: #E6E6FA;
+            margin-bottom: 100px;
+            min-width: fit-content;
+        }
+
+        h2 { text-align: center; color: #2e7d32; margin-bottom: 15px; }
+
+        table {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-collapse: collapse;
+            width: auto; 
+            min-width: 100%;
+            table-layout: auto; 
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 8px;
+            text-align: center;
+            white-space: nowrap; 
+        }
+
+        th { 
+            background-color: #eeeeee; 
+            font-size: 18px; 
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 80px;
+            padding: 10px 2px;
+            font-size: 18px; 
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .item {
+            text-align: left;
+            font-size: 19px; 
+            font-weight: bold;
+            padding-left: 8px;
+            white-space: nowrap; 
+        }
+
+        .result {
+            font-weight: 900;
+            font-size: 24px;
+            color: #000;
+            min-width: 70px;
+        }
+
+        .tare-cell {
+            font-size: 16px;
+            color: #666;
+        }
+
+        tr.error td { background-color: #f8d7da !important; }
+        tr.done td { background-color: #d4edda !important; }
+
+        .fab {
+            position: fixed;
+            right: 20px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            color: white;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        #copyBtn { bottom: 100px; background: #28a745; }
+        #clearBtn { bottom: 20px; background: #dc3545; }
+    </style>
+</head>
+
+<body>
+
+<h2>💧🥬生菜重量計算_水耕_川聖_箱裝</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>品項</th>
+            <th>總重kg</th>
+            <th>件數</th>
+            <th>苔重</th>
+            <th>實秤</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+
+<button id="copyBtn" class="fab" onclick="copyText()">📋</button>
+<button id="clearBtn" class="fab" onclick="clearAll()">🗑️</button>
+
+<script>
+const STORAGE_KEY = "lettuce_data_v1";
+
+const items = [
+    {name:"紅捲生菜", icon:"🔴🥬"},
+    {name:"綠捲生菜", icon:"🟢🥬"},
+    {name:"紅火焰生菜", icon:"🔴🔥"},
+    {name:"綠火焰生菜", icon:"🟢🔥"},
+    {name:"紅橡木生菜", icon:"🔴🌿"},
+    {name:"綠橡木生菜", icon:"🟢🌿"},
+    {name:"奶油波士頓生菜", icon:"🧈🥬"},
+    {name:"羽衣甘藍", icon:"🥬✨"},
+    {name:"紅包心生菜", icon:"🔴🥬"},
+    {name:"紅蘿蔓", icon:"🔴🥬"},
+    {name:"歐芹", icon:"🌿"}
+];
+
+const TARE_VALUE = 1.49; 
+const tbody = document.getElementById("tableBody");
+
+items.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+        <td class="item">${item.icon} ${item.name}</td>
+        <td><input type="number" step="0.01" id="weight${i}" placeholder="0"></td>
+        <td><input type="number" id="count${i}" placeholder="0"></td>
+        <td class="tare-cell">${TARE_VALUE}</td>
+        <td class="result" id="result${i}">0.00</td>
+    `;
+    tbody.appendChild(tr);
+});
+
+document.addEventListener("input", calc);
+
+function calc() {
+    items.forEach((_, i) => {
+        const weightVal = document.getElementById("weight"+i).value;
+        const countVal = document.getElementById("count"+i).value;
+        const resultCell = document.getElementById("result"+i);
+        const row = resultCell.closest("tr");
+
+        row.classList.remove("error", "done");
+
+        if (weightVal === "" && countVal === "") {
+            resultCell.innerText = "0.00";
+            return;
+        }
+
+        if (weightVal === "" || countVal === "" || parseFloat(weightVal) <= 0 || parseInt(countVal) <= 0) {
+            resultCell.innerText = "⚠️";
+            row.classList.add("error");
+            return;
+        }
+
+        let weight = parseFloat(weightVal);
+        let count = parseInt(countVal);
+        let netWeight = weight - (TARE_VALUE * count);
+
+        if (netWeight >= 0) {
+            resultCell.innerText = netWeight.toFixed(2);
+            row.classList.add("done");
+        } else {
+            resultCell.innerText = "⚠️";
+            row.classList.add("error");
+        }
+    });
+
+    saveData(); // ⭐自動保存
+}
+
+function saveData() {
+    let data = items.map((_, i) => ({
+        weight: document.getElementById("weight"+i).value,
+        count: document.getElementById("count"+i).value
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function loadData() {
+    let saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+
+    let data = JSON.parse(saved);
+    data.forEach((d, i) => {
+        if (!d) return;
+        document.getElementById("weight"+i).value = d.weight || "";
+        document.getElementById("count"+i).value = d.count || "";
+    });
+
+    calc();
+}
+
+function copyText() {
+    let output = "【生菜重量回報】\n";
+    output += "------------------------\n";
+    let hasData = false;
+
+    items.forEach((item, i) => {
+        const weightVal = document.getElementById("weight"+i).value;
+        const countVal = document.getElementById("count"+i).value;
+        
+        if (weightVal !== "" && countVal !== "" && parseInt(countVal) > 0) {
+            let weight = parseFloat(weightVal);
+            let count = parseInt(countVal);
+            let totalTare = (TARE_VALUE * count).toFixed(2);
+            let result = (weight - totalTare).toFixed(2);
+            
+            output += `${item.name}：${count}件\n`;
+            output += `計算：${weight} - (${TARE_VALUE}×${count}) = ${result}kg\n`;
+            output += `實秤：${result}kg\n\n`;
+            hasData = true;
+        }
+    });
+
+    if (!hasData) return alert("請輸入完整資料");
+    
+    navigator.clipboard.writeText(output).then(() => {
+        alert("已複製完整回報文字(無圖示)！");
+    });
+}
+
+function clearAll() {
+    if (!confirm("確定要全部清除嗎？")) return;
+
+    items.forEach((_, i) => {
+        document.getElementById("weight"+i).value = "";
+        document.getElementById("count"+i).value = "";
+        document.getElementById("result"+i).innerText = "0.00";
+        document.getElementById("result"+i).closest("tr").classList.remove("error","done");
+    });
+
+    localStorage.removeItem(STORAGE_KEY); // ⭐一起清掉
+}
+
+// ⭐頁面載入時自動還原
+loadData();
+</script>
+
+</body>
+</html>
