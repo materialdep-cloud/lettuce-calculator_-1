@@ -118,20 +118,26 @@
 const STORAGE_KEY = "lettuce_data_v1";
 
 const items = [
-    {name:"紅捲生菜(水耕)", icon:"🔴🥬"},
-    {name:"綠捲生菜(水耕)", icon:"🟢🥬"},
-    {name:"紅火焰生菜(水耕)", icon:"🔴🔥"},
-    {name:"綠火焰生菜(水耕)", icon:"🟢🔥"},
-    {name:"紅橡木生菜(水耕)", icon:"🔴🌿"},
-    {name:"綠橡木生菜(水耕)", icon:"🟢🌿"},
-    {name:"奶油波士頓生菜(水耕)", icon:"🧈🥬"},
-    {name:"羽衣甘藍(水耕)", icon:"🥬✨"},
-    {name:"紅包心生菜(水耕)", icon:"🔴🥬"},
-    {name:"紅蘿蔓(水耕)", icon:"🔴🥬"},
-    {name:"歐芹(水耕)", icon:"🌿"}
+    {name:"本產美生菜", icon:"🥬", tare:1.45},
+    {name:"本產蘿美(牛皮紙箱)", icon:"🥬", tare:1.51},
+    {name:"本產蘿美(白箱)", icon:"🥬", tare:1.42},
+    {name:"進口美生菜", icon:"📦🥬", tare:1.22},
+    {name:"進口蘿美(大包)", icon:"📦🥬", tare:1.06},
+    {name:"進口蘿美(小包)", icon:"📦🥬", tare:1.51},
+
+    {name:"紅捲生菜", icon:"🔴🥬", tare:1.49},
+    {name:"綠捲生菜", icon:"🟢🥬", tare:1.49},
+    {name:"紅火焰生菜", icon:"🔴🔥", tare:1.49},
+    {name:"綠火焰生菜", icon:"🟢🔥", tare:1.49},
+    {name:"紅橡木生菜", icon:"🔴🌿", tare:1.49},
+    {name:"綠橡木生菜", icon:"🟢🌿", tare:1.49},
+    {name:"奶油波士頓生菜", icon:"🧈🥬", tare:1.49},
+    {name:"羽衣甘藍", icon:"🥬✨", tare:1.49},
+    {name:"紅包心生菜", icon:"🔴🥬", tare:1.49},
+    {name:"紅蘿蔓", icon:"🔴🥬", tare:1.49},
+    {name:"歐芹", icon:"🌿", tare:1.49}
 ];
 
-const TARE_VALUE = 1.49; 
 const tbody = document.getElementById("tableBody");
 
 items.forEach((item, i) => {
@@ -140,7 +146,7 @@ items.forEach((item, i) => {
         <td class="item">${item.icon} ${item.name}</td>
         <td><input type="number" step="0.01" id="weight${i}" placeholder="0"></td>
         <td><input type="number" id="count${i}" placeholder="0"></td>
-        <td class="tare-cell">${TARE_VALUE}</td>
+        <td class="tare-cell">${item.tare}</td>
         <td class="result" id="result${i}">0.00</td>
     `;
     tbody.appendChild(tr);
@@ -149,7 +155,7 @@ items.forEach((item, i) => {
 document.addEventListener("input", calc);
 
 function calc() {
-    items.forEach((_, i) => {
+    items.forEach((item, i) => {
         const weightVal = document.getElementById("weight"+i).value;
         const countVal = document.getElementById("count"+i).value;
         const resultCell = document.getElementById("result"+i);
@@ -170,7 +176,8 @@ function calc() {
 
         let weight = parseFloat(weightVal);
         let count = parseInt(countVal);
-        let netWeight = weight - (TARE_VALUE * count);
+        let tare = item.tare;
+        let netWeight = weight - (tare * count);
 
         if (netWeight >= 0) {
             resultCell.innerText = netWeight.toFixed(2);
@@ -181,7 +188,7 @@ function calc() {
         }
     });
 
-    saveData(); // ⭐自動保存
+    saveData();
 }
 
 function saveData() {
@@ -218,11 +225,12 @@ function copyText() {
         if (weightVal !== "" && countVal !== "" && parseInt(countVal) > 0) {
             let weight = parseFloat(weightVal);
             let count = parseInt(countVal);
-            let totalTare = (TARE_VALUE * count).toFixed(2);
+            let tare = item.tare;
+            let totalTare = (tare * count).toFixed(2);
             let result = (weight - totalTare).toFixed(2);
             
             output += `${item.name}：${count}件\n`;
-            output += `計算：${weight} - (${TARE_VALUE}×${count}) = ${result}kg\n`;
+            output += `計算：${weight} - (${tare}×${count}) = ${result}kg\n`;
             output += `實秤：${result}kg\n\n`;
             hasData = true;
         }
@@ -245,10 +253,9 @@ function clearAll() {
         document.getElementById("result"+i).closest("tr").classList.remove("error","done");
     });
 
-    localStorage.removeItem(STORAGE_KEY); // ⭐一起清掉
+    localStorage.removeItem(STORAGE_KEY);
 }
 
-// ⭐頁面載入時自動還原
 loadData();
 </script>
 
