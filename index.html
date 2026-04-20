@@ -16,6 +16,14 @@
 
         h2 { text-align: center; color: #2e7d32; margin-bottom: 15px; }
 
+        #restoreNotice {
+            text-align:center;
+            color:#d9534f;
+            font-weight:bold;
+            margin-bottom:10px;
+            display:none;
+        }
+
         table {
             background: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -39,7 +47,7 @@
             color: #333;
         }
 
-        input {
+        input, select {
             width: 80px;
             padding: 10px 2px;
             font-size: 18px; 
@@ -98,12 +106,15 @@
 
 <h2>💧🥬生菜重量計算_水耕_川聖_箱裝</h2>
 
+<div id="restoreNotice">⚠️ 尚有上次未清除資料</div>
+
 <table>
     <thead>
         <tr>
             <th>品項</th>
             <th>總重kg</th>
             <th>件數</th>
+            <th>綠園板</th>
             <th>苔重</th>
             <th>實秤</th>
         </tr>
@@ -115,7 +126,8 @@
 <button id="clearBtn" class="fab" onclick="clearAll()">🗑️</button>
 
 <script>
-const STORAGE_KEY = "lettuce_data_v1";
+const STORAGE_KEY = "lettuce_data_v4";
+const BOARD_WEIGHT = 8.2; // ✅ 綠園板重量
 
 const items = [
     {name:"本產美生菜", icon:"🥬", tare:1.45},
@@ -144,8 +156,16 @@ items.forEach((item, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
         <td class="item">${item.icon} ${item.name}</td>
-        <td><input type="number" step="0.01" id="weight${i}" placeholder="0"></td>
-        <td><input type="number" id="count${i}" placeholder="0"></td>
+        <td><input type="number" step="0.01" id="weight${i}"></td>
+        <td><input type="number" id="count${i}"></td>
+        <td>
+            <select id="board${i}">
+                <option value="0" selected>0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </td>
         <td class="tare-cell">${item.tare}</td>
         <td class="result" id="result${i}">0.00</td>
     `;
@@ -158,6 +178,8 @@ function calc() {
     items.forEach((item, i) => {
         const weightVal = document.getElementById("weight"+i).value;
         const countVal = document.getElementById("count"+i).value;
+        const boardVal = document.getElementById("board"+i).value;
+
         const resultCell = document.getElementById("result"+i);
         const row = resultCell.closest("tr");
 
@@ -176,8 +198,10 @@ function calc() {
 
         let weight = parseFloat(weightVal);
         let count = parseInt(countVal);
+        let board = parseInt(boardVal);
         let tare = item.tare;
-        let netWeight = weight - (tare * count);
+
+        let netWeight = weight - (tare * count) - (BOARD_WEIGHT * board);
 
         if (netWeight >= 0) {
             resultCell.innerText = netWeight.toFixed(2);
@@ -194,7 +218,8 @@ function calc() {
 function saveData() {
     let data = items.map((_, i) => ({
         weight: document.getElementById("weight"+i).value,
-        count: document.getElementById("count"+i).value
+        count: document.getElementById("count"+i).value,
+        board: document.getElementById("board"+i).value
     }));
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
@@ -204,11 +229,23 @@ function loadData() {
     if (!saved) return;
 
     let data = JSON.parse(saved);
+    let hasData = false;
+
     data.forEach((d, i) => {
         if (!d) return;
+
+        if (d.weight || d.count) {
+            hasData = true;
+        }
+
         document.getElementById("weight"+i).value = d.weight || "";
         document.getElementById("count"+i).value = d.count || "";
+        document.getElementById("board"+i).value = d.board || "0";
     });
+
+    if (hasData) {
+        document.getElementById("restoreNotice").style.display = "block";
+    }
 
     calc();
 }
@@ -221,25 +258,28 @@ function copyText() {
     items.forEach((item, i) => {
         const weightVal = document.getElementById("weight"+i).value;
         const countVal = document.getElementById("count"+i).value;
-        
+
         if (weightVal !== "" && countVal !== "" && parseInt(countVal) > 0) {
             let weight = parseFloat(weightVal);
             let count = parseInt(countVal);
+            let board = parseInt(document.getElementById("board"+i).value);
             let tare = item.tare;
+
             let totalTare = (tare * count).toFixed(2);
-            let result = (weight - totalTare).toFixed(2);
-            
+            let boardWeight = (BOARD_WEIGHT * board).toFixed(2);
+            let result = (weight - totalTare - boardWeight).toFixed(2);
+
             output += `${item.name}：${count}件\n`;
-            output += `計算：${weight} - (${tare}×${count}) = ${result}kg\n`;
+            output += `計算：${weight} - (${tare}×${count}) - (${BOARD_WEIGHT}×${board}) = ${result}kg\n`;
             output += `實秤：${result}kg\n\n`;
             hasData = true;
         }
     });
 
     if (!hasData) return alert("請輸入完整資料");
-    
+
     navigator.clipboard.writeText(output).then(() => {
-        alert("已複製完整回報文字(無圖示)！");
+        alert("已複製完整回報文字！");
     });
 }
 
@@ -249,11 +289,13 @@ function clearAll() {
     items.forEach((_, i) => {
         document.getElementById("weight"+i).value = "";
         document.getElementById("count"+i).value = "";
+        document.getElementById("board"+i).value = "0";
         document.getElementById("result"+i).innerText = "0.00";
         document.getElementById("result"+i).closest("tr").classList.remove("error","done");
     });
 
     localStorage.removeItem(STORAGE_KEY);
+    document.getElementById("restoreNotice").style.display = "none";
 }
 
 loadData();
