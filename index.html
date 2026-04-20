@@ -126,8 +126,8 @@
 <button id="clearBtn" class="fab" onclick="clearAll()">🗑️</button>
 
 <script>
-const STORAGE_KEY = "lettuce_data_v4";
-const BOARD_WEIGHT = 8.2; // ✅ 綠園板重量
+const STORAGE_KEY = "lettuce_data_v5";
+const BOARD_WEIGHT = 8.2;
 
 const items = [
     {name:"本產美生菜", icon:"🥬", tare:1.45},
@@ -156,7 +156,11 @@ items.forEach((item, i) => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
         <td class="item">${item.icon} ${item.name}</td>
-        <td><input type="number" step="0.01" id="weight${i}"></td>
+        <td>
+            <input type="number" step="0.01" id="w1_${i}">
+            <input type="number" step="0.01" id="w2_${i}">
+            <input type="number" step="0.01" id="w3_${i}">
+        </td>
         <td><input type="number" id="count${i}"></td>
         <td>
             <select id="board${i}">
@@ -174,9 +178,16 @@ items.forEach((item, i) => {
 
 document.addEventListener("input", calc);
 
+function getWeight(i){
+    let w1 = parseFloat(document.getElementById("w1_"+i).value) || 0;
+    let w2 = parseFloat(document.getElementById("w2_"+i).value) || 0;
+    let w3 = parseFloat(document.getElementById("w3_"+i).value) || 0;
+    return w1 + w2 + w3;
+}
+
 function calc() {
     items.forEach((item, i) => {
-        const weightVal = document.getElementById("weight"+i).value;
+        let weight = getWeight(i);
         const countVal = document.getElementById("count"+i).value;
         const boardVal = document.getElementById("board"+i).value;
 
@@ -185,18 +196,17 @@ function calc() {
 
         row.classList.remove("error", "done");
 
-        if (weightVal === "" && countVal === "") {
+        if (weight === 0 && countVal === "") {
             resultCell.innerText = "0.00";
             return;
         }
 
-        if (weightVal === "" || countVal === "" || parseFloat(weightVal) <= 0 || parseInt(countVal) <= 0) {
+        if (weight <= 0 || countVal === "" || parseInt(countVal) <= 0) {
             resultCell.innerText = "⚠️";
             row.classList.add("error");
             return;
         }
 
-        let weight = parseFloat(weightVal);
         let count = parseInt(countVal);
         let board = parseInt(boardVal);
         let tare = item.tare;
@@ -217,7 +227,9 @@ function calc() {
 
 function saveData() {
     let data = items.map((_, i) => ({
-        weight: document.getElementById("weight"+i).value,
+        w1: document.getElementById("w1_"+i).value,
+        w2: document.getElementById("w2_"+i).value,
+        w3: document.getElementById("w3_"+i).value,
         count: document.getElementById("count"+i).value,
         board: document.getElementById("board"+i).value
     }));
@@ -234,11 +246,13 @@ function loadData() {
     data.forEach((d, i) => {
         if (!d) return;
 
-        if (d.weight || d.count) {
+        if (d.w1 || d.w2 || d.w3 || d.count) {
             hasData = true;
         }
 
-        document.getElementById("weight"+i).value = d.weight || "";
+        document.getElementById("w1_"+i).value = d.w1 || "";
+        document.getElementById("w2_"+i).value = d.w2 || "";
+        document.getElementById("w3_"+i).value = d.w3 || "";
         document.getElementById("count"+i).value = d.count || "";
         document.getElementById("board"+i).value = d.board || "0";
     });
@@ -256,11 +270,10 @@ function copyText() {
     let hasData = false;
 
     items.forEach((item, i) => {
-        const weightVal = document.getElementById("weight"+i).value;
+        let weight = getWeight(i);
         const countVal = document.getElementById("count"+i).value;
 
-        if (weightVal !== "" && countVal !== "" && parseInt(countVal) > 0) {
-            let weight = parseFloat(weightVal);
+        if (weight > 0 && countVal !== "" && parseInt(countVal) > 0) {
             let count = parseInt(countVal);
             let board = parseInt(document.getElementById("board"+i).value);
             let tare = item.tare;
@@ -287,7 +300,9 @@ function clearAll() {
     if (!confirm("確定要全部清除嗎？")) return;
 
     items.forEach((_, i) => {
-        document.getElementById("weight"+i).value = "";
+        document.getElementById("w1_"+i).value = "";
+        document.getElementById("w2_"+i).value = "";
+        document.getElementById("w3_"+i).value = "";
         document.getElementById("count"+i).value = "";
         document.getElementById("board"+i).value = "0";
         document.getElementById("result"+i).innerText = "0.00";
