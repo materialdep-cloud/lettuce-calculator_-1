@@ -279,7 +279,15 @@ function copyText() {
                         if (item.name === "進口美生菜［越南］") {
                 output += "(成品:進口美生菜)\n";
             }
-            output += `計算：${weight} - (${tare}×${count}) - (${BOARD_WEIGHT}×${board}) = ${result}kg\n`;
+           let calcText = `計算：${weight} - (${tare}×${count})`;
+
+           if (board > 0) {
+           calcText += ` - (${BOARD_WEIGHT}×${board})`;
+            }
+
+            calcText += ` = ${result}kg\n`;
+
+            output += calcText;
             output += `實秤：${result}kg\n\n`;
             hasData = true;
         }
