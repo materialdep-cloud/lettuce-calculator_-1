@@ -276,9 +276,14 @@ function copyText() {
             let result = (weight - totalTare - boardWeight).toFixed(2);
 
             output += `原料:${item.name}：${count}件\n`;
-                        if (item.name === "進口美生菜［越南］") {
-                output += "(成品:進口美生菜)\n";
-            }
+                       const importLettuce = [
+                       "進口美生菜［越南］",
+                       "進口美生菜［韓國］"
+                       ];
+
+           if (importLettuce.includes(item.name)) {
+           output += "(成品:進口美生菜)\n";
+           }
            let calcText = `計算：${weight} - (${tare}×${count})`;
 
            if (board > 0) {
