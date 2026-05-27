@@ -272,23 +272,27 @@ function copyText() {
             let board = parseInt(document.getElementById("board"+i).value);
             let tare = item.tare;
 
+            // 格式化總重，保留至小數點後兩位，防止 JavaScript 浮點數誤差產生多個小數位
+            let displayWeight = weight.toFixed(2);
             let totalTare = (tare * count).toFixed(2);
             let boardWeight = (BOARD_WEIGHT * board).toFixed(2);
-            let result = (weight - totalTare - boardWeight).toFixed(2);
+            let result = (weight - (tare * count) - (BOARD_WEIGHT * board)).toFixed(2);
 
             output += `原料:${item.name}：${count}件\n`;
-                       const importLettuce = [
-                       "進口美生菜［越南］",
-                       "進口美生菜［韓國］"
-                       ];
+            const importLettuce = [
+                "進口美生菜［越南］",
+                "進口美生菜［韓國］"
+            ];
 
-           if (importLettuce.includes(item.name)) {
-           output += "(成品:進口美生菜)\n";
-           }
-           let calcText = `計算：${weight} - (${tare}×${count})`;
+            if (importLettuce.includes(item.name)) {
+                output += "(成品:進口美生菜)\n";
+            }
 
-           if (board > 0) {
-           calcText += ` - (${BOARD_WEIGHT}×${board})`;
+            // 使用已格式化的總重 (displayWeight) 進行字串串接
+            let calcText = `計算：${displayWeight} - (${tare}×${count})`;
+
+            if (board > 0) {
+                calcText += ` - (${BOARD_WEIGHT}×${board})`;
             }
 
             calcText += ` = ${result}kg\n`;
@@ -301,6 +305,7 @@ function copyText() {
 
     if (!hasData) return alert("請輸入完整資料");
 
+    // 複製文字至剪貼簿
     navigator.clipboard.writeText(output).then(() => {
         alert("已複製完整回報文字！");
     });
