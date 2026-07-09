@@ -3,127 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <title>💧🥬生菜重量計算_水耕_川聖_箱裝</title>
-    <meta name="viewport" content="width=device-width, initial-scale=0.8, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
+    <!-- 引入 Tailwind CSS 提升 UI 質感與響應式佈局 -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: "Microsoft JhengHei", Arial, sans-serif;
-            padding: 10px;
-            background: #E6E6FA;
-            margin-bottom: 100px;
-            min-width: fit-content;
+            font-family: "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f0f2f5;
         }
-
-        h2 { text-align: center; color: #2e7d32; margin-bottom: 15px; }
-
-        #restoreNotice {
-            text-align:center;
-            color:#d9534f;
-            font-weight:bold;
-            margin-bottom:10px;
-            display:none;
+        /* 隱藏 Chrome, Safari, Edge, Opera 的數字輸入框上下箭頭 */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
-
-        table {
-            background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            border-collapse: collapse;
-            width: auto; 
-            min-width: 100%;
-            table-layout: auto; 
+        /* 隱藏 Firefox 的數字輸入框上下箭頭 */
+        input[type=number] {
+            -moz-appearance: textfield;
         }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px 8px;
-            text-align: center;
-            white-space: nowrap; 
-        }
-
-        th { 
-            background-color: #eeeeee; 
-            font-size: 18px; 
-            font-weight: bold;
-            color: #333;
-        }
-
-        input, select {
-            width: 80px;
-            padding: 10px 2px;
-            font-size: 18px; 
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .item {
-            text-align: left;
-            font-size: 19px; 
-            font-weight: bold;
-            padding-left: 8px;
-            white-space: nowrap; 
-        }
-
-        .result {
-            font-weight: 900;
-            font-size: 24px;
-            color: #000;
-            min-width: 70px;
-        }
-
-        .tare-cell {
-            font-size: 16px;
-            color: #666;
-        }
-
-        tr.error td { background-color: #f8d7da !important; }
-        tr.done td { background-color: #d4edda !important; }
-
-        .fab {
-            position: fixed;
-            right: 20px;
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            color: white;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        #copyBtn { bottom: 100px; background: #28a745; }
-        #clearBtn { bottom: 20px; background: #dc3545; }
     </style>
 </head>
 
-<body>
+<body class="p-4 md:p-6 min-h-screen pb-32">
 
-<h2>💧🥬生菜重量計算_水耕_川聖_箱裝</h2>
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+    <!-- 標頭 -->
+    <div class="bg-gradient-to-r from-green-600 to-emerald-700 p-6 text-white text-center">
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-wide flex items-center justify-center gap-2">
+            <span>💧🥬</span> 生菜重量計算 <span class="text-sm bg-white/20 px-3 py-1 rounded-full font-normal">水耕_川聖_箱裝</span>
+        </h1>
+        <!-- 恢復資料提醒 -->
+        <div id="restoreNotice" class="hidden mt-3 bg-amber-500 text-white text-sm font-semibold py-1.5 px-4 rounded-full inline-flex items-center gap-1.5 animate-bounce shadow-md">
+            <span>⚠️</span> 偵測到上次未清除的輸入資料，已為您自動載入
+        </div>
+    </div>
 
-<div id="restoreNotice">⚠️ 尚有上次未清除資料</div>
+    <!-- 表格容器 (支援橫向捲動以利小螢幕讀取) -->
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-100 border-b border-gray-200 text-gray-700 font-bold text-sm md:text-base">
+                    <th class="p-4 whitespace-nowrap">品項</th>
+                    <th class="p-4 text-center whitespace-nowrap">總重 kg (最多三組)</th>
+                    <th class="p-4 text-center whitespace-nowrap" style="width: 100px;">件數</th>
+                    <th class="p-4 text-center whitespace-nowrap" style="width: 100px;">綠園板</th>
+                    <th class="p-4 text-center whitespace-nowrap" style="width: 80px;">苔重</th>
+                    <th class="p-4 text-center whitespace-nowrap" style="width: 120px;">實秤</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-gray-100">
+                <!-- 透過 JS 動態產生 -->
+            </tbody>`
+        </table>
+    </div>
+</div>
 
-<table>
-    <thead>
-        <tr>
-            <th>品項</th>
-            <th>總重kg</th>
-            <th>件數</th>
-            <th>綠園板</th>
-            <th>苔重</th>
-            <th>實秤</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
+<!-- 浮動操作按鈕 (FAB) -->
+<div class="fixed bottom-6 right-6 flex flex-col gap-4 z-50">
+    <!-- 複製按鈕 -->
+    <button id="copyBtn" onclick="copyText()" class="flex items-center justify-center w-16 h-16 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white rounded-full shadow-2xl transition-all duration-200 group relative">
+        <span class="text-2xl">📋</span>
+        <span class="absolute right-20 bg-gray-800 text-white text-xs py-1 px-2.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md">複製完整回報</span>
+    </button>
+    <!-- 清除按鈕 -->
+    <button id="clearBtn" onclick="confirmClearAll()" class="flex items-center justify-center w-16 h-16 bg-red-600 hover:bg-red-500 active:scale-95 text-white rounded-full shadow-2xl transition-all duration-200 group relative">
+        <span class="text-2xl">🗑️</span>
+        <span class="absolute right-20 bg-gray-800 text-white text-xs py-1 px-2.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-md">清除所有欄位</span>
+    </button>
+</div>
 
-<button id="copyBtn" class="fab" onclick="copyText()">📋</button>
-<button id="clearBtn" class="fab" onclick="clearAll()">🗑️</button>
+<!-- 自訂彈出式對話框 (Modal) 代替瀏覽器原生的 confirm -->
+<div id="confirmModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50 backdrop-blur-sm transition-all duration-200">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <span class="text-red-500 text-2xl">⚠️</span> 確定清除資料？
+        </h3>
+        <p class="text-gray-500 mt-2 text-sm leading-relaxed">
+            此操作將會清空目前表格內填寫的所有總重、件數與綠園板設定，且無法復原。
+        </p>
+        <div class="flex justify-end gap-3 mt-6">
+            <button onclick="closeConfirmModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl text-sm transition-colors">
+                取消
+            </button>
+            <button id="modalConfirmBtn" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-medium rounded-xl text-sm transition-colors shadow-lg shadow-red-100">
+                確定清除
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 自訂提示訊息 (Toast) 代替瀏覽器原生的 alert -->
+<div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 flex flex-col gap-2 z-50 pointer-events-none"></div>
 
 <script>
 const STORAGE_KEY = "lettuce_data_v5";
@@ -147,30 +118,48 @@ const items = [
 
 const tbody = document.getElementById("tableBody");
 
+// 渲染表格內容
 items.forEach((item, i) => {
     const tr = document.createElement("tr");
+    tr.id = `row_${i}`;
+    tr.className = "hover:bg-gray-50/50 transition-colors duration-150 text-sm md:text-base";
     tr.innerHTML = `
-        <td class="item">${item.icon} ${item.name}</td>
-        <td>
-            <input type="number" step="0.01" id="w1_${i}">
-            <input type="number" step="0.01" id="w2_${i}">
-            <input type="number" step="0.01" id="w3_${i}">
+        <td class="p-4 font-semibold text-gray-800 whitespace-nowrap">
+            <!-- 使用 flex 版面配置，搭配 gap-2.5 徹底解決圖案與文字重疊的問題 -->
+            <div class="flex items-center gap-2.5">
+                <span class="inline-block shrink-0 text-left min-w-[2.2rem]">${item.icon}</span>
+                <span class="truncate">${item.name}</span>
+            </div>
         </td>
-        <td><input type="number" id="count${i}"></td>
-        <td>
-            <select id="board${i}">
+        <td class="p-4">
+            <div class="flex items-center justify-center gap-1">
+                <input type="number" step="0.01" id="w1_${i}" placeholder="-" class="w-16 md:w-20 p-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm transition-all text-base font-medium">
+                <span class="text-gray-400 text-xs">+</span>
+                <input type="number" step="0.01" id="w2_${i}" placeholder="-" class="w-16 md:w-20 p-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm transition-all text-base font-medium">
+                <span class="text-gray-400 text-xs">+</span>
+                <input type="number" step="0.01" id="w3_${i}" placeholder="-" class="w-16 md:w-20 p-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm transition-all text-base font-medium">
+            </div>
+        </td>
+        <td class="p-4 text-center">
+            <input type="number" id="count${i}" placeholder="0" class="w-16 p-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm transition-all text-base font-bold text-gray-800">
+        </td>
+        <td class="p-4 text-center">
+            <select id="board${i}" class="w-16 p-2 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white shadow-sm transition-all text-base font-medium cursor-pointer">
                 <option value="0" selected>0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
             </select>
         </td>
-        <td class="tare-cell">${item.tare}</td>
-        <td class="result" id="result${i}">0.00</td>
+        <td class="p-4 text-center text-gray-500 font-medium whitespace-nowrap">${item.tare}</td>
+        <td class="p-4 text-center">
+            <span id="result${i}" class="text-xl md:text-2xl font-black text-gray-900 tracking-tight">0.00</span>
+        </td>
     `;
     tbody.appendChild(tr);
 });
 
+// 監聽所有輸入欄位的異動
 document.addEventListener("input", calc);
 
 function getWeight(i){
@@ -187,9 +176,12 @@ function calc() {
         const boardVal = document.getElementById("board"+i).value;
 
         const resultCell = document.getElementById("result"+i);
-        const row = resultCell.closest("tr");
+        const row = document.getElementById("row_" + i);
 
-        row.classList.remove("error", "done");
+        // 恢復初始背景與文字樣式
+        row.classList.remove("bg-red-50", "bg-green-50", "hover:bg-red-50/70", "hover:bg-green-50/70");
+        resultCell.classList.remove("text-red-600", "text-emerald-600");
+        resultCell.classList.add("text-gray-900");
 
         if (weight === 0 && countVal === "") {
             resultCell.innerText = "0.00";
@@ -198,7 +190,8 @@ function calc() {
 
         if (weight <= 0 || countVal === "" || parseInt(countVal) <= 0) {
             resultCell.innerText = "⚠️";
-            row.classList.add("error");
+            resultCell.classList.add("text-red-600");
+            row.classList.add("bg-red-50", "hover:bg-red-50/70");
             return;
         }
 
@@ -210,10 +203,13 @@ function calc() {
 
         if (netWeight >= 0) {
             resultCell.innerText = netWeight.toFixed(2);
-            row.classList.add("done");
+            resultCell.classList.remove("text-gray-900");
+            resultCell.classList.add("text-emerald-600");
+            row.classList.add("bg-green-50", "hover:bg-green-50/70");
         } else {
             resultCell.innerText = "⚠️";
-            row.classList.add("error");
+            resultCell.classList.add("text-red-600");
+            row.classList.add("bg-red-50", "hover:bg-red-50/70");
         }
     });
 
@@ -253,10 +249,74 @@ function loadData() {
     });
 
     if (hasData) {
-        document.getElementById("restoreNotice").style.display = "block";
+        document.getElementById("restoreNotice").classList.remove("hidden");
     }
 
     calc();
+}
+
+// 實作自訂 Toast 提示
+function showToast(message, type = "success") {
+    const container = document.getElementById("toastContainer");
+    const toast = document.createElement("div");
+    
+    const bgClass = type === "success" ? "bg-gray-900" : "bg-red-600";
+    toast.className = `${bgClass} text-white text-sm font-semibold py-3 px-6 rounded-xl shadow-2xl flex items-center gap-2 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto`;
+    toast.innerHTML = `
+        <span>${type === 'success' ? '✅' : 'ℹ️'}</span>
+        <span>${message}</span>
+    `;
+    
+    container.appendChild(toast);
+    
+    // 強制重繪以觸發動畫效果
+    setTimeout(() => {
+        toast.classList.remove("translate-y-4", "opacity-0");
+    }, 10);
+    
+    // 3秒後自動消失
+    setTimeout(() => {
+        toast.classList.add("translate-y-4", "opacity-0");
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// 實作自訂確認視窗 (Modal)
+function confirmClearAll() {
+    const modal = document.getElementById("confirmModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    
+    const confirmBtn = document.getElementById("modalConfirmBtn");
+    confirmBtn.onclick = function() {
+        executeClearAll();
+        closeConfirmModal();
+    };
+}
+
+function closeConfirmModal() {
+    const modal = document.getElementById("confirmModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+}
+
+function executeClearAll() {
+    items.forEach((_, i) => {
+        document.getElementById("w1_"+i).value = "";
+        document.getElementById("w2_"+i).value = "";
+        document.getElementById("w3_"+i).value = "";
+        document.getElementById("count"+i).value = "";
+        document.getElementById("board"+i).value = "0";
+        document.getElementById("result"+i).innerText = "0.00";
+        
+        const row = document.getElementById("row_" + i);
+        row.classList.remove("bg-red-50", "bg-green-50", "hover:bg-red-50/70", "hover:bg-green-50/70");
+        document.getElementById("result"+i).className = "text-xl md:text-2xl font-black text-gray-900 tracking-tight";
+    });
+
+    localStorage.removeItem(STORAGE_KEY);
+    document.getElementById("restoreNotice").classList.add("hidden");
+    showToast("所有欄位已成功清除！", "success");
 }
 
 function copyText() {
@@ -273,23 +333,22 @@ function copyText() {
             let board = parseInt(document.getElementById("board"+i).value);
             let tare = item.tare;
 
-            // 格式化總重，保留至小數點後兩位，防止 JavaScript 浮點數誤差產生多個小數位
+            // 格式化總重，保留至小數點後兩位
             let displayWeight = weight.toFixed(2);
-            let totalTare = (tare * count).toFixed(2);
-            let boardWeight = (BOARD_WEIGHT * board).toFixed(2);
             let result = (weight - (tare * count) - (BOARD_WEIGHT * board)).toFixed(2);
 
-            output += `原料:${item.name}：${count}件\n`;
-            const importLettuce = [
-                "進口美生菜［越南］",
-                "進口美生菜［韓國］"
-            ];
-
-            if (importLettuce.includes(item.name)) {
+            // 依據條件輸出原料資訊
+            if (item.name === "進口美生菜［韓國］") {
+                output += `原料:${item.name}：${count}件\n`;
+                output += "(領料:進口美生菜)\n(成品:進口美生菜)\n";
+            } else if (item.name === "進口美生菜［越南］") {
+                output += `原料:${item.name}：${count}件\n`;
                 output += "(成品:進口美生菜)\n";
+            } else {
+                output += `原料:${item.name}：${count}件\n`;
             }
 
-            // 使用已格式化的總重 (displayWeight) 進行字串串接
+            // 組合計算公式
             let calcText = `計算：${displayWeight} - (${tare}×${count})`;
 
             if (board > 0) {
@@ -304,31 +363,45 @@ function copyText() {
         }
     });
 
-    if (!hasData) return alert("請輸入完整資料");
+    if (!hasData) {
+        return showToast("請至少輸入一筆完整的品項總重與件數資料！", "error");
+    }
 
-    // 複製文字至剪貼簿
-    navigator.clipboard.writeText(output).then(() => {
-        alert("已複製完整回報文字！");
-    });
+    // 🏆 相容性最高的剪貼簿複製方案，避免 sandbox/iframe 限制
+    const tempTextArea = document.createElement("textarea");
+    tempTextArea.value = output;
+    // 設置定位防跑版
+    tempTextArea.style.position = "fixed";
+    tempTextArea.style.top = "0";
+    tempTextArea.style.left = "0";
+    tempTextArea.style.width = "2em";
+    tempTextArea.style.height = "2em";
+    tempTextArea.style.padding = "0";
+    tempTextArea.style.border = "none";
+    tempTextArea.style.outline = "none";
+    tempTextArea.style.boxShadow = "none";
+    tempTextArea.style.background = "transparent";
+    
+    document.body.appendChild(tempTextArea);
+    tempTextArea.focus();
+    tempTextArea.select();
+    tempTextArea.setSelectionRange(0, 99999); // 適用行動裝置
+
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showToast("已成功複製完整回報文字！", "success");
+        } else {
+            showToast("複製失敗，請手動全選複製", "error");
+        }
+    } catch (err) {
+        showToast("瀏覽器不支援一鍵複製，請手動複製", "error");
+    }
+
+    document.body.removeChild(tempTextArea);
 }
 
-function clearAll() {
-    if (!confirm("確定要全部清除嗎？")) return;
-
-    items.forEach((_, i) => {
-        document.getElementById("w1_"+i).value = "";
-        document.getElementById("w2_"+i).value = "";
-        document.getElementById("w3_"+i).value = "";
-        document.getElementById("count"+i).value = "";
-        document.getElementById("board"+i).value = "0";
-        document.getElementById("result"+i).innerText = "0.00";
-        document.getElementById("result"+i).closest("tr").classList.remove("error","done");
-    });
-
-    localStorage.removeItem(STORAGE_KEY);
-    document.getElementById("restoreNotice").style.display = "none";
-}
-
+// 載入資料
 loadData();
 </script>
 
