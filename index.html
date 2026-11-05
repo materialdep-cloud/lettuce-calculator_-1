@@ -339,15 +339,15 @@ function copyText() {
             let result = (weight - (tare * count) - (BOARD_WEIGHT * board)).toFixed(2);
 
             // 依據條件輸出原料資訊
-            if (item.name === "進口美生菜［韓國］") {
-                output += `原料:進口美生菜：${count}件\n`;
-                output += "(成品:進口美生菜)\n";
-            } else if (item.name === "進口美生菜［越南］") {
-                output += `原料:${item.name}：${count}件\n`;
-                output += "(成品:進口美生菜)\n";
-            } else {
-                output += `原料:${item.name}：${count}件\n`;
-            }
+//            if (item.name === "進口美生菜［韓國］") {
+//                output += `原料:進口美生菜：${count}件\n`;
+//                output += "(成品:進口美生菜)\n";
+//            } else if (item.name === "進口美生菜［越南］") {
+//                output += `原料:${item.name}：${count}件\n`;
+//                output += "(成品:進口美生菜)\n";
+//            } else {
+//                output += `原料:${item.name}：${count}件\n`;
+//            }
 
             // 組合計算公式
             let calcText = `計算：${displayWeight} - (${tare}×${count})`;
